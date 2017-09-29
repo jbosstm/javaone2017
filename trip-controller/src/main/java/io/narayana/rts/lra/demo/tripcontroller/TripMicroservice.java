@@ -21,7 +21,6 @@
  */
 package io.narayana.rts.lra.demo.tripcontroller;
 
-import io.narayana.lra.annotation.LRA;
 import io.narayana.lra.client.LRAClient;
 import io.narayana.lra.client.LRAClientAPI;
 import io.narayana.rts.lra.demo.model.Booking;
@@ -66,7 +65,6 @@ public class TripMicroservice {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @LRA(delayClose = true, join = false)
     public Booking reserve(@HeaderParam(LRAClient.LRA_HTTP_HEADER) String bookingId) throws UnsupportedEncodingException {
         Booking theGrand = reserve(false, "TheGrand");
         Booking firstClass = reserve(true, "firstClass");
@@ -83,9 +81,7 @@ public class TripMicroservice {
     @Path("/{bookingId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Booking confirm(@PathParam("bookingId") String bookingId) throws IOException, URISyntaxException {
-        String responseData = lraClientAPI.closeLRA(new URL(bookingId));
         Booking booking = bookingStore.update(bookingId, Booking.BookingStatus.CONFIRMED);
-        booking.merge(responseData);
         return booking;
     }
 
@@ -93,9 +89,7 @@ public class TripMicroservice {
     @Path("/{bookingId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Booking cancel(@PathParam("bookingId") String bookingId) throws IOException, URISyntaxException {
-        String responseData = lraClientAPI.cancelLRA(new URL(bookingId));
         Booking booking = bookingStore.update(bookingId, Booking.BookingStatus.CANCELLED);
-        booking.merge(responseData);
         return booking;
     }
 

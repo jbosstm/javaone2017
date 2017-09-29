@@ -21,16 +21,11 @@
  */
 package io.narayana.rts.lra.demo.hotel;
 
-import io.narayana.lra.annotation.Compensate;
-import io.narayana.lra.annotation.Complete;
-import io.narayana.lra.annotation.LRA;
-import io.narayana.lra.client.LRAClient;
 import io.narayana.rts.lra.demo.model.Booking;
 import io.narayana.rts.lra.demo.model.BookingStore;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -48,8 +43,7 @@ public class HotelMicroservice {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @LRA
-    public Booking reserve(@HeaderParam(LRAClient.LRA_HTTP_HEADER) String bookingId, @QueryParam("name") String name) {
+    public Booking reserve(@QueryParam("name") String name) {
         Booking booking = new Booking(bookingId, name);
         bookingStore.add(booking);
         return booking;
@@ -57,19 +51,11 @@ public class HotelMicroservice {
 
     // Participant
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/complete")
-    @Complete
-    public Booking complete(@HeaderParam(LRAClient.LRA_HTTP_HEADER) String bookingId) {
-        return bookingStore.update(bookingId, Booking.BookingStatus.CONFIRMED);
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/compensate")
-    @Compensate
-    public Booking compensate(@HeaderParam(LRAClient.LRA_HTTP_HEADER) String bookingId) {
-        return bookingStore.update(bookingId, Booking.BookingStatus.CANCELLED);
-    }
+//    public Booking complete() {
+//        return bookingStore.update(bookingId, Booking.BookingStatus.CONFIRMED);
+//    }
+//
+//    public Booking compensate() {
+//        return bookingStore.update(bookingId, Booking.BookingStatus.CANCELLED);
+//    }
 }
